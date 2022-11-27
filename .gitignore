@@ -1,0 +1,7 @@
+archives
+*.zip
+*.gz
+*.xz
+*.7z
+.vscode
+.cache
