@@ -377,7 +377,8 @@ assert len(shellcode) == len(real_shellcode) * instr_len
 
 # TTOWRSS
 
-直到做出来才明白这道题题目的意思是 "towards" (话说题目要是叫 "SDRAWOT" 会不会做出来的人更多呢 doge).
+<del>直到做出来才明白这道题题目的意思是 "towards" (话说题目要是叫 "SDRAWOT" 会不会做出来的人更多呢 doge)</del>.
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ (Update: 不好意思, 猜错了)
 
 拿到 elf 之后先用 BinaryNinja 整体看一下 (这方面 BinaryNinja 确实比 IDA 和 Ghidra 方便很多), 发现主函数就是一个递归, 里面没啥东西, 但是 `.init_array` 里有两个函数 (注: `.init_array` 里的东西会在主函数之前执行), 其中一个是 `frame_dummy`, 这个我们不关心, 另外一个是位于 `0x10b0` 位置的一个函数.
 
