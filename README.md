@@ -1,12 +1,16 @@
 # PKU GeekGame 2 Writeup
 
-比赛网站: https://geekgame.pku.edu.cn/
+#### 比赛网站: https://geekgame.pku.edu.cn/
 
-用户名: std::_Rb_tree
+#### 题目源码与官方题解: https://github.com/PKU-GeekGame/geekgame-2nd
 
-排名: 6
+#### 用户名: std::_Rb_tree
 
+#### 总分: 3903
 
+#### 总排名: 6
+
+![](assets/rank.png)
 
 # 编原译理习题课
 
